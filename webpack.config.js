@@ -21,16 +21,16 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(woff(2)?|png)$/,
+        use: ['file-loader']
       }
     ]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      meta: {
-        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
-      },
-      title: 'tetrjs'
-    }),
-    new HtmlWebpackRootPlugin()
+      template: './src/index.html'
+    })
   ]
 };

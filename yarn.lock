@@ -31,16 +31,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.1.tgz#6d11a8c2d58405b3db9388ab740106cbfa64c3c9"
   integrity sha512-hx6zWtudh3Arsbl3cXay+JnkvVgCKzCWKv42C9J01N2T2np4h8w5X8u6Tpz5mj38kE3M9FM0Pazx8vKFFMnjLQ==
 
-"@types/p2@^0.7.36":
-  version "0.7.36"
-  resolved "https://registry.yarnpkg.com/@types/p2/-/p2-0.7.36.tgz#adf412ff0fc3dc2f4a0e979ec78a02e3d94862f4"
-  integrity sha512-D6WXEJ0B+TLOr6oXdXb/NROFJebW/D8QUgue25hUe158nwUk2rksCXHSNcOLsXrlZiGQyN2EUAYA4PF9XLqBkQ==
-
-"@types/systemjs@^0.20.6":
-  version "0.20.7"
-  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-0.20.7.tgz#73281a628736336f6c645304f31d6fe8669d387d"
-  integrity sha512-sCMqKfN5KEacy+cLfNOV66EYAs7a2c4m/Z86Ph81Anzj39/A0Tij8bVjlvAnwRgdC1pOewNhIDFQV0peZ9/K1w==
-
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
@@ -453,13 +443,6 @@ boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
-
-box2d.ts@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/box2d.ts/-/box2d.ts-1.0.2.tgz#846592e82160e442ffbbc21e9066138368a8a473"
-  integrity sha512-WRBTqXLXZlTQ+bcmOqjPPISm6c8mYaKFrF2dU4CxaYWk0wdXb7MVU+oXNanK3iSLx1wz6Kf0cR/Ct2WijLfBJg==
-  dependencies:
-    "@types/systemjs" "^0.20.6"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -1474,6 +1457,14 @@ figgy-pudding@^3.5.1:
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.1.tgz#862470112901c727a0e495a80744bd5baa1d6790"
   integrity sha512-vNKxJHTEKNThjfrdJwHc7brvM6eVevuO5nTj6ez8ZQ1qbXTvGthucRF7S4vf2cr71QVnT70V34v0S1DyQsti0w==
 
+file-loader@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-5.0.2.tgz#7f3d8b4ac85a5e8df61338cfec95d7405f971caa"
+  integrity sha512-QMiQ+WBkGLejKe81HU8SZ9PovsU/5uaLo0JdTCEXOYv7i7jfAjHZi1tcwp9tSASJPOmmHZtbdCervFmXMH/Dcg==
+  dependencies:
+    loader-utils "^1.2.3"
+    schema-utils "^2.5.0"
+
 file-uri-to-path@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
@@ -1534,11 +1525,6 @@ findup-sync@3.0.0:
     is-glob "^4.0.0"
     micromatch "^3.0.4"
     resolve-dir "^1.0.1"
-
-flatted@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
-  integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
 
 flush-write-stream@^1.0.0:
   version "1.1.1"
@@ -2875,13 +2861,6 @@ p-try@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
 
-p2@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/p2/-/p2-0.7.1.tgz#25f2474d9bc3a6d3140a1da26a67c9e118ac9543"
-  integrity sha1-JfJHTZvDptMUCh2iamfJ4RislUM=
-  dependencies:
-    poly-decomp "0.1.1"
-
 pako@~1.0.5:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
@@ -3010,22 +2989,15 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
-planck-js@^0.3.10:
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/planck-js/-/planck-js-0.3.10.tgz#5d9241331797c9103a7f3895e53a9b4126ccfd2c"
-  integrity sha512-uBC7yrSZxQz+3DOEPrPMUpLvacSyA71cejTPXUXYnPDPbkh9LFvGf0U6QxM66wB49R4H4JTnX5F5SntX1QCTkg==
-  dependencies:
-    flatted "^2.0.1"
+poly-decomp@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/poly-decomp/-/poly-decomp-0.3.0.tgz#aa499289bbc1a4ca2213e966587fa5bffc1ca5f5"
+  integrity sha512-hWeBxGzPYiybmI4548Fca7Up/0k1qS5+79cVHI9+H33dKya5YNb9hxl0ZnDaDgvrZSuYFBhkCK/HOnqN7gefkQ==
 
-planck-renderer@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/planck-renderer/-/planck-renderer-2.2.0.tgz#d0ddeceeab6706fa2f8290e98a41bacc5d04b0d9"
-  integrity sha512-84yBYrdSXgfvQ/TfBgfY4W1sAygpLyUL4vflwysPnxkFsOvJnxSckPRHNWQIQ21u9D1XJ/Z/jxnHHG8vo50W9A==
-
-poly-decomp@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/poly-decomp/-/poly-decomp-0.1.1.tgz#9f68c4fa558663791c9ba4c2df7283f3096c23c9"
-  integrity sha1-n2jE+lWGY3kcm6TC33KD8wlsI8k=
+polyk@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/polyk/-/polyk-0.24.0.tgz#64679113eebb55ad371b7a9a5878f276b38218d6"
+  integrity sha1-ZGeRE+67Va03G3qaWHjydrOCGNY=
 
 portfinder@^1.0.25:
   version "1.0.25"
@@ -3421,7 +3393,7 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
-schema-utils@^2.0.1, schema-utils@^2.6.0:
+schema-utils@^2.0.1, schema-utils@^2.5.0, schema-utils@^2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.1.tgz#eb78f0b945c7bcfa2082b3565e8db3548011dc4f"
   integrity sha512-0WXHDs1VDJyo+Zqs9TKLKyD/h7yDpHUhEFsM2CzkICFdoX1av+GBq/J2xRTFfsQO5kBfhZzANf2VcIm84jqDbg==

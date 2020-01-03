@@ -1,13 +1,20 @@
 import Renderer from './renderer';
 import Engine from './engine';
+import GameController from './game-controller';
 
 export default class Game {
   engine: Engine;
   renderer: Renderer;
+  gameController: GameController;
 
-  constructor(renderer: Renderer, engine: Engine) {
+  constructor(
+    renderer: Renderer,
+    engine: Engine,
+    gameController: GameController
+  ) {
     this.renderer = renderer;
     this.engine = engine;
+    this.gameController = gameController;
   }
 
   run() {
@@ -21,6 +28,7 @@ export default class Game {
       const delta = lastTime ? (time - lastTime) / 1000 : 0;
 
       this.engine.update(delta, this.world);
+      this.renderer.render(this.gameController.getNextPiece());
 
       lastTime = time;
     }

@@ -9,8 +9,7 @@ import GameController from 'engine/game-controller';
 
 const engine = new Engine();
 const renderer = new Renderer(GAME_WIDTH, GAME_HEIGHT, engine.getInstance());
-const game = new Game(renderer, engine);
-
-new GameController(engine);
+const gameController = new GameController(engine);
+const game = new Game(renderer, engine, gameController);
 
 game.run();

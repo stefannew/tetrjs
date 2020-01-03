@@ -1,7 +1,100 @@
-body {
+@font-face {
+  font-family: 'early_gameboyregular';
+  src: url('fonts/early_gameboy-webfont.woff2') format('woff2'),
+    url('fonts/early_gameboy-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body,
+#root {
   display: flex;
+  font-family: 'early_gameboyregular';
+  image-rendering: pixelated;
+}
+
+#root {
+  margin: 0 auto;
 }
 
 canvas {
   margin: 0 auto;
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -o-crisp-edges;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+#canvas-container {
+  image-rendering: pixelated;
+  background-image: url('images/bricks.png');
+  background-size: 20px;
+  padding: 0 19px;
+}
+
+#display-container {
+  background-color: black;
+  display: flex;
+  font-size: 22px;
+  flex-direction: column;
+  margin-left: 5px;
+  width: 150px;
+}
+
+#display-container value {
+  text-align: right;
+}
+
+#score {
+  background-image: url('images/bg-top.png');
+  height: 100px;
+  background-size: cover;
+  margin-bottom: 20px;
+}
+
+#score label {
+  position: relative;
+  top: 20px;
+  left: 26px;
+}
+
+#score .value {
+  float: right;
+  position: relative;
+  right: 35px;
+  top: 66px;
+}
+
+#level,
+#lines {
+  background-image: url('images/bg-mid.png');
+  background-size: cover;
+  height: 62px;
+  margin: 2.5px 10px;
+}
+
+#level label,
+#lines label {
+  left: 13px;
+  position: relative;
+  top: 7px;
+}
+
+#level .value,
+#lines .value {
+  float: right;
+  right: 25px;
+  position: relative;
+}
+
+#next-piece {
+  background-size: cover;
+  background-image: url('images/bg-bottom.png');
+  height: 110px;
+  left: 10px;
+  position: relative;
+  top: 15px;
+  width: 110px;
 }

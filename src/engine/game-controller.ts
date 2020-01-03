@@ -1,3 +1,9 @@
+import * as PolyK from 'polyk';
+// @ts-ignore
+import decomp from 'poly-decomp';
+// @ts-ignore
+window.decomp = decomp;
+
 import {
   Body,
   Bodies,
@@ -5,23 +11,25 @@ import {
   Engine as MEngine,
   Events,
   Query,
-  World
+  Vertices,
+  World,
+  Vector
 } from 'matter-js';
 
 import {
+  BLOCK_SIZE,
+  BLOCKS,
+  GameState,
   GAME_HEIGHT,
   GAME_WIDTH,
-  BLOCK_SIZE,
-  LABEL,
-  BLOCKS,
-  COLORS,
-  STARTING_POSITION_X,
-  STARTING_POSITION_Y,
+  IMAGES,
   KEY_CODE,
-  GameState
+  LABEL,
+  STARTING_POSITION_X,
+  STARTING_POSITION_Y
 } from '../constants';
 import Engine from './engine';
-import { getRandomTetronimoName, degreesToRadians } from 'utils';
+import { getRandomTetronimoName } from 'utils';
 
 const createContainer = () => {
   const ground = Bodies.rectangle(
@@ -71,23 +79,25 @@ const createContainer = () => {
 
 const createBlock = (
   [x, y]: Array<number>,
-  color: string,
   px: number,
-  py: number
+  py: number,
+  name: string
 ) =>
   Bodies.rectangle(x + px, y + py, BLOCK_SIZE, BLOCK_SIZE, {
     label: LABEL.BLOCK,
-    render: {
-      fillStyle: color,
-      lineWidth: 1.5
-    }
+    // @ts-ignore
+    name,
+    isSleeping: true
   });
 
 export default class GameController {
-  currentPiece: Body;
-  engine: MEngine;
-  world: World;
+  currentPiece: Body = null;
   currentState: GameState;
+  hasInstantiated: boolean = false;
+  engine: MEngine;
+  lines: number = 0;
+  nextPiece: Body = null;
+  world: World;
 
   constructor(engine: Engine) {
     this.world = engine.getWorld();
@@ -97,8 +107,15 @@ export default class GameController {
     window.addEventListener('keydown', this.keyDown.bind(this));
     World.add(this.world, createContainer());
     Events.on(this.engine, 'collisionStart', this.onCollisionStart.bind(this));
-    Events.on(this.engine, 'afterTick', this.checkRows.bind(this));
-    Events.on(this.engine, 'beforeUpdate', this.checkGameOver);
+    Events.on(this.engine, 'afterTick', this.afterTick.bind(this));
+  }
+
+  private afterTick() {
+    this.checkRows();
+    this.checkGameOver();
+
+    // Draw Line Counter to Screen
+    document.querySelector('#lines .value').textContent = this.lines.toString();
   }
 
   private keyDown({ keyCode }: KeyboardEvent) {
@@ -118,15 +135,24 @@ export default class GameController {
     }
   }
 
+  private checkGameOver() {
+    // @ts-ignore
+    if (!this.currentPiece.alive && this.currentPiece.position.y < 0) {
+      this.setCurrentState(GameState.GAME_OVER);
+    }
+  }
+
   private killTetronimo(tetronimo: Body) {
     // @ts-ignore
     tetronimo.parent.alive = false;
     tetronimo.parent.mass = 100;
   }
 
+  private incrementLineCount() {
+    this.lines++;
+  }
+
   private checkRows() {
-    const context = document.querySelector('canvas').getContext('2d');
-    const rayWidth = 0.1;
     const tetronimos = Composite.allBodies(this.world)
       // @ts-ignore
       .flatMap(body => body.parts)
@@ -140,37 +166,95 @@ export default class GameController {
 
       const end = {
         x: GAME_WIDTH,
-        y
+        y: y
       };
 
-      const collisions = Query.ray(tetronimos, start, end, rayWidth);
+      const collisions = Query.region(tetronimos, {
+        min: {
+          x: start.x,
+          y: start.y + 2
+        },
+        max: {
+          x: end.x,
+          y: end.y + BLOCK_SIZE - 2
+        }
+      });
 
       if (collisions.length >= 10) {
-        const blocks = collisions.map(collision => collision.body);
-        const parents = blocks.map(block => block.parent);
+        this.drawRowDeletion(start, end);
+        this.incrementLineCount();
 
-        parents.forEach((parent: Body) => {
-          blocks.forEach((block: Body) => {
-            const index = parent.parts.findIndex(b => b.id === block.id);
-            if (index > -1) {
-              parent.parts.splice(index, 1);
-            }
+        let toBeSliced = [];
+        let toBeCreated: Array<PolyK.Polygon> = [];
+
+        for (let i = 0; i < collisions.length; i++) {
+          let vertices = collisions[i].parts[0].vertices;
+          let pointsArray: Array<number> = [];
+          vertices.forEach((vertex: Matter.Vector) => {
+            pointsArray.push(vertex.x, vertex.y);
           });
+
+          let slicedPolys = PolyK.Slice(
+            pointsArray,
+            start.x,
+            start.y,
+            end.x,
+            end.y
+          );
+          if (slicedPolys.length > 1) {
+            toBeSliced.push(collisions[i]);
+            slicedPolys.forEach(points => {
+              toBeCreated.push(points);
+            });
+          }
+
+          // @ts-ignore
+          if (collisions[i].parent.alive && !this.hasInstantiated) {
+            this.instantiateTetronimo();
+            this.hasInstantiated = true;
+          }
+
+          World.remove(this.world, collisions[i].parent);
+        }
+
+        toBeSliced.forEach((body: Body) => {
+          World.remove(this.world, body);
         });
+
+        toBeCreated.forEach(points => {
+          let poly = [];
+          for (let i = 0; i < points.length / 2; i++) {
+            poly.push({
+              // @ts-ignore
+              x: points[i * 2],
+              y: points[i * 2 + 1]
+            });
+          }
+
+          let sliceCenter = Vertices.centre(poly);
+          const body = Bodies.fromVertices(sliceCenter.x, sliceCenter.y, poly, {
+            alive: false,
+            label: LABEL.TETRONIMO,
+            render: {}
+          });
+
+          World.add(this.world, body);
+        });
+
+        for (let i = 0; i < collisions.length; i++) {
+          World.remove(this.world, collisions[i]);
+        }
       }
     }
   }
 
-  private checkGameOver() {
-    const tetronimos = Composite.allBodies(this.world).filter(
-      body => body.label === LABEL.TETRONIMO
-    );
-
-    tetronimos.forEach(tetronimo => {
-      // @ts-ignore
-      if (tetronimo.position.y < 0 && !tetronimo.alive) {
-      }
-    });
+  private drawRowDeletion(start: Vector, end: Vector) {
+    const context = document.querySelector('canvas').getContext('2d');
+    context.moveTo(start.x, start.y);
+    context.lineTo(end.x, end.y);
+    context.strokeStyle = 'grey';
+    context.lineWidth = BLOCK_SIZE;
+    context.stroke();
   }
 
   private onCollisionStart({ pairs }: Matter.IEventCollision<Body>) {
@@ -225,25 +309,42 @@ export default class GameController {
     }
   }
 
-  private instantiateTetronimo() {
+  private createRandomTetronimo() {
     const tetronimoName = getRandomTetronimoName();
     const vertices = BLOCKS[tetronimoName];
-    const color = COLORS[tetronimoName];
 
-    this.currentPiece = Body.create({
+    return Body.create({
       // @ts-ignore
       alive: true,
       label: LABEL.TETRONIMO,
       parts: vertices.map((vertex: Array<number>) =>
         createBlock(
           vertex,
-          color,
           STARTING_POSITION_X[tetronimoName],
-          STARTING_POSITION_Y
+          STARTING_POSITION_Y,
+          tetronimoName
         )
       )
     });
+  }
 
+  private instantiateTetronimo() {
+    this.currentPiece =
+      this.nextPiece === null ? this.createRandomTetronimo() : this.nextPiece;
+    this.nextPiece = this.createRandomTetronimo();
     World.add(this.world, this.currentPiece);
+    this.hasInstantiated = false;
+  }
+
+  private drawTitle() {}
+
+  private drawPause() {}
+
+  public setCurrentState(nextState: GameState) {
+    this.currentState = nextState;
+  }
+
+  public getNextPiece() {
+    return this.nextPiece;
   }
 }

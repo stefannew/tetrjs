@@ -3,6 +3,26 @@ export const GAME_HEIGHT = 20 * BLOCK_SIZE;
 export const GAME_WIDTH = 10 * BLOCK_SIZE;
 export const GRAVITY = 9.82;
 
+const LImage = require('../images/L.png');
+const SImage = require('../images/S.png');
+const TImage = require('../images/T.png');
+const IImage = require('../images/I.png');
+const OImage = require('../images/O.png');
+const ZImage = require('../images/Z.png');
+const JImage = require('../images/J.png');
+
+export const IMAGES: {
+  [tetronimoName: string]: string;
+} = {
+  L: LImage,
+  S: SImage,
+  T: TImage,
+  I: IImage,
+  O: OImage,
+  Z: ZImage,
+  J: JImage
+};
+
 export enum GameState {
   TITLE,
   PLAYING,
@@ -37,7 +57,8 @@ export const LABEL = {
   WALL_LEFT: 'WALL_LEFT',
   WALL_RIGHT: 'WALL_RIGHT',
   TETRONIMO: 'TETRONIMO',
-  BLOCK: 'BLOCK'
+  BLOCK: 'BLOCK',
+  CHUNK: 'CHUNK'
 };
 
 export const BLOCKS: {
