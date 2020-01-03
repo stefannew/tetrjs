@@ -22,7 +22,6 @@ import {
   GameState,
   GAME_HEIGHT,
   GAME_WIDTH,
-  IMAGES,
   KEY_CODE,
   LABEL,
   STARTING_POSITION_X,
@@ -92,7 +91,8 @@ const createBlock = (
 
 export default class GameController {
   currentPiece: Body = null;
-  currentState: GameState;
+  currentState: GameState = GameState.PLAYING;
+  ground: Body;
   hasInstantiated: boolean = false;
   engine: MEngine;
   lines: number = 0;
@@ -103,16 +103,17 @@ export default class GameController {
     this.world = engine.getWorld();
     this.engine = engine.getInstance();
     this.instantiateTetronimo();
+    const [ground, left, right] = createContainer();
+    this.ground = ground;
 
     window.addEventListener('keydown', this.keyDown.bind(this));
-    World.add(this.world, createContainer());
+    World.add(this.world, [this.ground, left, right]);
     Events.on(this.engine, 'collisionStart', this.onCollisionStart.bind(this));
     Events.on(this.engine, 'afterTick', this.afterTick.bind(this));
   }
 
   private afterTick() {
     this.checkRows();
-    this.checkGameOver();
 
     // Draw Line Counter to Screen
     document.querySelector('#lines .value').textContent = this.lines.toString();
@@ -135,17 +136,20 @@ export default class GameController {
     }
   }
 
-  private checkGameOver() {
-    // @ts-ignore
-    if (!this.currentPiece.alive && this.currentPiece.position.y < 0) {
-      this.setCurrentState(GameState.GAME_OVER);
-    }
+  private gameOver() {
+    this.setCurrentState(GameState.GAME_OVER);
+    (document.querySelector(
+      '#game-over-text'
+    ) as HTMLDivElement).style.visibility = 'visible';
+    this.world.gravity.y = 0.25;
+    World.remove(this.world, this.ground);
   }
 
-  private killTetronimo(tetronimo: Body) {
+  private killTetronimo(block: Body) {
     // @ts-ignore
-    tetronimo.parent.alive = false;
-    tetronimo.parent.mass = 100;
+    block.parent.alive = false;
+    block.parent.density = 1;
+    block.parent.mass = 1;
   }
 
   private incrementLineCount() {
@@ -180,7 +184,7 @@ export default class GameController {
         }
       });
 
-      if (collisions.length >= 10) {
+      if (collisions.length >= 12) {
         this.drawRowDeletion(start, end);
         this.incrementLineCount();
 
@@ -261,6 +265,10 @@ export default class GameController {
     for (let i = 0; i < pairs.length; i++) {
       const { bodyA, bodyB } = pairs[i];
 
+      if (bodyA.position.y <= -25 || bodyB.position.y <= -25) {
+        this.gameOver();
+      }
+
       if (
         bodyA.label === LABEL.GROUND &&
         // @ts-ignore
@@ -329,6 +337,8 @@ export default class GameController {
   }
 
   private instantiateTetronimo() {
+    if (this.currentState !== GameState.PLAYING) return;
+
     this.currentPiece =
       this.nextPiece === null ? this.createRandomTetronimo() : this.nextPiece;
     this.nextPiece = this.createRandomTetronimo();

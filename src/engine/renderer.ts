@@ -52,7 +52,7 @@ export default class Renderer {
     this.nextPieceContext.fillRect(5, 5, 100, 100);
     this.nextPieceContext.beginPath();
 
-    const parts = nextPiece.parts.slice(1);
+    const parts = nextPiece.parts.slice(1); // Removing the reference to self
 
     parts.forEach(part => {
       // @ts-ignore
@@ -61,8 +61,8 @@ export default class Renderer {
 
       this.nextPieceContext.drawImage(
         this.images[name],
-        vertex.x - 45,
-        vertex.y + 80,
+        vertex.x - 47,
+        name === 'I' ? vertex.y + 95 : vertex.y + 85,
         21,
         21
       );
