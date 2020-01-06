@@ -1,4 +1,4 @@
-export const BLOCK_SIZE = 20;
+export const BLOCK_SIZE = 80;
 export const GAME_HEIGHT = 20 * BLOCK_SIZE;
 export const GAME_WIDTH = 10 * BLOCK_SIZE;
 export const GRAVITY = 9.82;
@@ -32,6 +32,8 @@ export enum GameState {
 }
 
 export const KEY_CODE = {
+  ENTER: 13,
+  ESCAPE: 27,
   LEFT: 37,
   UP: 38,
   RIGHT: 39,

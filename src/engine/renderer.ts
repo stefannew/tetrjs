@@ -15,23 +15,29 @@ export default class Renderer {
     this.nextPieceContext = (document.querySelector(
       '#next-piece'
     ) as HTMLCanvasElement).getContext('2d');
-    this.nextPieceContext.imageSmoothingEnabled = false; /// future
-    this.images = {};
-
+    this.nextPieceContext.imageSmoothingEnabled = false;
     this.renderer = Render.create({
       element: document.querySelector('#canvas-container'),
       engine,
       options: {
         background: 'white',
-        height,
-        width,
+        height: height / 4,
+        width: width / 4,
         wireframes: false
       }
     });
+    this.renderer.context.scale(0.25, 0.25);
 
+    this.init();
+  }
+
+  private init() {
+    this.images = {};
+    const imageKeys = Object.keys(IMAGES);
+    const totalImageCount = imageKeys.length;
     let imageCount = 0;
 
-    Object.keys(IMAGES).forEach(tetronimoName => {
+    imageKeys.forEach(tetronimoName => {
       const image = new Image();
       // @ts-ignore
       image.src = `${IMAGES[tetronimoName].default}`;
@@ -40,14 +46,14 @@ export default class Renderer {
         imageCount += 1;
         this.images[tetronimoName] = image;
 
-        if (imageCount === Object.keys(IMAGES).length) {
+        if (imageCount === totalImageCount) {
           Render.run(this.renderer);
         }
       }.bind(this);
     });
   }
 
-  public render(nextPiece: Matter.Body) {
+  public render(nextPiece: Matter.Body, bodies: Array<Matter.Body>) {
     this.nextPieceContext.fillStyle = '#fff';
     this.nextPieceContext.fillRect(5, 5, 100, 100);
     this.nextPieceContext.beginPath();

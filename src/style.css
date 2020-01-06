@@ -20,12 +20,17 @@ body,
   position: relative;
 }
 
+#paused-text,
 #game-over-text {
   animation: blink 0.5s infinite;
   visibility: hidden;
-  left: 55px;
+  left: 45px;
   position: absolute;
   top: 50px;
+}
+
+#paused-text {
+  left: 75px;
 }
 
 @keyframes blink {

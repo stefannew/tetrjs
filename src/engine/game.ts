@@ -28,7 +28,10 @@ export default class Game {
       const delta = lastTime ? (time - lastTime) / 1000 : 0;
 
       this.engine.update(delta, this.world);
-      this.renderer.render(this.gameController.getNextPiece());
+      this.renderer.render(
+        this.gameController.getNextPiece(),
+        this.gameController.getBodies()
+      );
 
       lastTime = time;
     }

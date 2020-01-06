@@ -90,18 +90,31 @@ const createBlock = (
   });
 
 export default class GameController {
-  currentPiece: Body = null;
-  currentState: GameState = GameState.PLAYING;
-  ground: Body;
-  hasInstantiated: boolean = false;
-  engine: MEngine;
-  lines: number = 0;
-  nextPiece: Body = null;
-  world: World;
+  private currentPiece: Body = null;
+  private currentState: GameState = GameState.PLAYING;
+  private ground: Body;
+  private hasInstantiated: boolean = false;
+  private engine: MEngine;
+  private lines: number = 0;
+  private nextPiece: Body = null;
+  private world: World;
 
   constructor(engine: Engine) {
     this.world = engine.getWorld();
     this.engine = engine.getInstance();
+    this.init();
+  }
+
+  private init() {
+    (document.querySelector(
+      '#game-over-text'
+    ) as HTMLDivElement).style.visibility = 'hidden';
+    this.setCurrentState(GameState.PLAYING);
+    this.world.gravity.y = 0.05;
+    Composite.allBodies(this.world).forEach(body => {
+      World.remove(this.world, body);
+    });
+
     this.instantiateTetronimo();
     const [ground, left, right] = createContainer();
     this.ground = ground;
@@ -114,13 +127,22 @@ export default class GameController {
 
   private afterTick() {
     this.checkRows();
-
-    // Draw Line Counter to Screen
     document.querySelector('#lines .value').textContent = this.lines.toString();
+    // Draw Score
+    // Draw Level
+    // Should all of this be in the renderer?
   }
 
   private keyDown({ keyCode }: KeyboardEvent) {
     switch (keyCode) {
+      case KEY_CODE.ENTER:
+        if (this.currentState === GameState.GAME_OVER) {
+          this.init();
+        }
+        break;
+      case KEY_CODE.ESCAPE:
+        this.togglePaused();
+        break;
       case KEY_CODE.DOWN:
         this.currentPiece.position.y += 1;
         break;
@@ -185,7 +207,6 @@ export default class GameController {
       });
 
       if (collisions.length >= 12) {
-        this.drawRowDeletion(start, end);
         this.incrementLineCount();
 
         let toBeSliced = [];
@@ -250,15 +271,6 @@ export default class GameController {
         }
       }
     }
-  }
-
-  private drawRowDeletion(start: Vector, end: Vector) {
-    const context = document.querySelector('canvas').getContext('2d');
-    context.moveTo(start.x, start.y);
-    context.lineTo(end.x, end.y);
-    context.strokeStyle = 'grey';
-    context.lineWidth = BLOCK_SIZE;
-    context.stroke();
   }
 
   private onCollisionStart({ pairs }: Matter.IEventCollision<Body>) {
@@ -346,15 +358,41 @@ export default class GameController {
     this.hasInstantiated = false;
   }
 
+  /**
+   * In renderer?
+   * The renderer has no knowledge of the GameState
+   */
   private drawTitle() {}
 
-  private drawPause() {}
+  private togglePaused() {
+    if (this.currentState === GameState.PAUSED) {
+      this.world.gravity.y = 0.05;
+      this.currentPiece.isStatic = false;
+      // @ts-ignore
+      document.querySelector('#paused-text').style.visibility = 'hidden';
+      this.setCurrentState(GameState.PLAYING);
+      return;
+    }
+
+    this.setCurrentState(GameState.PAUSED);
+    this.currentPiece.isStatic = true;
+    // @ts-ignore
+    document.querySelector('#paused-text').style.visibility = 'visible';
+  }
 
   public setCurrentState(nextState: GameState) {
     this.currentState = nextState;
   }
 
+  public getCurrentState() {
+    return this.currentState;
+  }
+
   public getNextPiece() {
     return this.nextPiece;
+  }
+
+  public getBodies() {
+    return Composite.allBodies(this.world);
   }
 }
