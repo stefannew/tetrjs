@@ -1,4 +1,6 @@
+export const BACKGROUND_COLOR = '#FFFFFF';
 export const BLOCK_SIZE = 80;
+export const CONTEXT_SCALE_RATIO = 0.25;
 export const GAME_HEIGHT = 20 * BLOCK_SIZE;
 export const GAME_WIDTH = 10 * BLOCK_SIZE;
 export const GRAVITY = 0.05;

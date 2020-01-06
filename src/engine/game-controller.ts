@@ -22,6 +22,7 @@ import {
   GameState,
   GAME_HEIGHT,
   GAME_WIDTH,
+  IMAGES,
   KEY_CODE,
   LABEL,
   STARTING_POSITION_X,
@@ -81,10 +82,18 @@ const createBlock = (
   [x, y]: Array<number>,
   px: number,
   py: number,
-  name: string
+  name: string,
+  image: string
 ) =>
   Bodies.rectangle(x + px, y + py, BLOCK_SIZE, BLOCK_SIZE, {
     label: LABEL.BLOCK,
+    render: {
+      sprite: {
+        texture: image,
+        xScale: 12,
+        yScale: 12
+      }
+    },
     // @ts-ignore
     name,
     isSleeping: true
@@ -334,17 +343,21 @@ export default class GameController {
   private createRandomTetronimo() {
     const tetronimoName = getRandomTetronimoName();
     const vertices = BLOCKS[tetronimoName];
+    // @ts-ignore
+    const image = `${IMAGES[tetronimoName].default}`;
 
     return Body.create({
       // @ts-ignore
       alive: true,
+      name: tetronimoName,
       label: LABEL.TETRONIMO,
       parts: vertices.map((vertex: Array<number>) =>
         createBlock(
           vertex,
           STARTING_POSITION_X[tetronimoName],
           STARTING_POSITION_Y,
-          tetronimoName
+          tetronimoName,
+          image
         )
       )
     });
