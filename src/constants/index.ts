@@ -1,7 +1,7 @@
 export const BLOCK_SIZE = 80;
 export const GAME_HEIGHT = 20 * BLOCK_SIZE;
 export const GAME_WIDTH = 10 * BLOCK_SIZE;
-export const GRAVITY = 9.82;
+export const GRAVITY = 0.05;
 
 const LImage = require('../images/L.png');
 const SImage = require('../images/S.png');

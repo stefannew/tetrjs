@@ -1,11 +1,12 @@
 import { Engine as MEngine } from 'matter-js';
+import { GRAVITY } from '../constants';
 
 export default class Engine {
   private instance: MEngine;
 
   constructor() {
     this.instance = MEngine.create();
-    this.instance.world.gravity.y = 0.05;
+    this.instance.world.gravity.y = GRAVITY;
   }
 
   update(delta: number) {

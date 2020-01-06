@@ -16,6 +16,11 @@ export default class Renderer {
       '#next-piece'
     ) as HTMLCanvasElement).getContext('2d');
     this.nextPieceContext.imageSmoothingEnabled = false;
+    /**
+     * I've scaled the physics engine up by a factor of four,
+     * and so I'm quartering the scale to keep the same render
+     * size. This makes the physics engine a lot more "stable"
+     */
     this.renderer = Render.create({
       element: document.querySelector('#canvas-container'),
       engine,
@@ -23,7 +28,9 @@ export default class Renderer {
         background: 'white',
         height: height / 4,
         width: width / 4,
-        wireframes: false
+        wireframes: false,
+        // @ts-ignore
+        showPositions: true
       }
     });
     this.renderer.context.scale(0.25, 0.25);
@@ -67,8 +74,8 @@ export default class Renderer {
 
       this.nextPieceContext.drawImage(
         this.images[name],
-        vertex.x - 47,
-        name === 'I' ? vertex.y + 95 : vertex.y + 85,
+        vertex.x / 4 - 47,
+        name === 'I' ? vertex.y / 25 : vertex.y / 4 + 45,
         21,
         21
       );

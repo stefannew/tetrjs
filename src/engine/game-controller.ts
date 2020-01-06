@@ -25,7 +25,8 @@ import {
   KEY_CODE,
   LABEL,
   STARTING_POSITION_X,
-  STARTING_POSITION_Y
+  STARTING_POSITION_Y,
+  GRAVITY
 } from '../constants';
 import Engine from './engine';
 import { getRandomTetronimoName } from 'utils';
@@ -92,9 +93,9 @@ const createBlock = (
 export default class GameController {
   private currentPiece: Body = null;
   private currentState: GameState = GameState.PLAYING;
+  private engine: MEngine;
   private ground: Body;
   private hasInstantiated: boolean = false;
-  private engine: MEngine;
   private lines: number = 0;
   private nextPiece: Body = null;
   private world: World;
@@ -106,11 +107,12 @@ export default class GameController {
   }
 
   private init() {
+    document.querySelector('#lines .value').textContent = this.lines.toString();
     (document.querySelector(
       '#game-over-text'
     ) as HTMLDivElement).style.visibility = 'hidden';
     this.setCurrentState(GameState.PLAYING);
-    this.world.gravity.y = 0.05;
+    this.world.gravity.y = GRAVITY;
     Composite.allBodies(this.world).forEach(body => {
       World.remove(this.world, body);
     });
@@ -122,7 +124,7 @@ export default class GameController {
     window.addEventListener('keydown', this.keyDown.bind(this));
     World.add(this.world, [this.ground, left, right]);
     Events.on(this.engine, 'collisionStart', this.onCollisionStart.bind(this));
-    Events.on(this.engine, 'afterTick', this.afterTick.bind(this));
+    Events.on(this.engine, 'afterRender', this.afterTick.bind(this));
   }
 
   private afterTick() {
@@ -144,16 +146,16 @@ export default class GameController {
         this.togglePaused();
         break;
       case KEY_CODE.DOWN:
-        this.currentPiece.position.y += 1;
+        this.currentPiece.position.y += 2;
         break;
       case KEY_CODE.UP:
         Body.rotate(this.currentPiece, Math.PI / 2);
         break;
       case KEY_CODE.LEFT:
-        this.currentPiece.position.x -= 1;
+        this.currentPiece.position.x -= 2;
         break;
       case KEY_CODE.RIGHT:
-        this.currentPiece.position.x += 1;
+        this.currentPiece.position.x += 2;
         break;
     }
   }
@@ -163,7 +165,7 @@ export default class GameController {
     (document.querySelector(
       '#game-over-text'
     ) as HTMLDivElement).style.visibility = 'visible';
-    this.world.gravity.y = 0.25;
+    this.world.gravity.y = GRAVITY * 2;
     World.remove(this.world, this.ground);
   }
 
@@ -198,15 +200,15 @@ export default class GameController {
       const collisions = Query.region(tetronimos, {
         min: {
           x: start.x,
-          y: start.y + 2
+          y: start.y
         },
         max: {
           x: end.x,
-          y: end.y + BLOCK_SIZE - 2
+          y: end.y + BLOCK_SIZE
         }
       });
 
-      if (collisions.length >= 12) {
+      if (collisions.length >= 9) {
         this.incrementLineCount();
 
         let toBeSliced = [];
@@ -366,7 +368,7 @@ export default class GameController {
 
   private togglePaused() {
     if (this.currentState === GameState.PAUSED) {
-      this.world.gravity.y = 0.05;
+      this.world.gravity.y = GRAVITY;
       this.currentPiece.isStatic = false;
       // @ts-ignore
       document.querySelector('#paused-text').style.visibility = 'hidden';
