@@ -30,7 +30,8 @@ export default class Game {
       this.engine.update(delta, this.world);
       this.renderer.render(
         this.gameController.getNextPiece(),
-        this.gameController.getBodies()
+        this.gameController.getBodies(),
+        this.gameController.getRowDeletionBounds()
       );
 
       lastTime = time;

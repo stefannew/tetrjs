@@ -112,7 +112,7 @@ export const BLOCKS: {
   ]
 };
 
-export const STARTING_POSITION_Y = -40;
+export const STARTING_POSITION_Y = -BLOCK_SIZE * 2;
 
 export const STARTING_POSITION_X: {
   [key: string]: number;

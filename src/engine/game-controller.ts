@@ -11,9 +11,10 @@ import {
   Engine as MEngine,
   Events,
   Query,
+  Vector,
   Vertices,
   World,
-  Vector
+  Bounds
 } from 'matter-js';
 
 import {
@@ -108,6 +109,7 @@ export default class GameController {
   private lines: number = 0;
   private nextPiece: Body = null;
   private world: World;
+  private rowDeletionBounds: Array<Bounds> = [];
 
   constructor(engine: Engine) {
     this.world = engine.getWorld();
@@ -133,7 +135,7 @@ export default class GameController {
     window.addEventListener('keydown', this.keyDown.bind(this));
     World.add(this.world, [this.ground, left, right]);
     Events.on(this.engine, 'collisionStart', this.onCollisionStart.bind(this));
-    Events.on(this.engine, 'afterRender', this.afterTick.bind(this));
+    Events.on(this.engine, 'afterTick', this.afterTick.bind(this));
   }
 
   private afterTick() {
@@ -213,15 +215,28 @@ export default class GameController {
         },
         max: {
           x: end.x,
-          y: end.y + BLOCK_SIZE
+          y: end.y
         }
       });
 
-      if (collisions.length >= 9) {
+      if (collisions.length >= 10) {
+        this.rowDeletionBounds.push({
+          min: {
+            x: start.x,
+            y: start.y
+          },
+          max: {
+            x: end.x,
+            y: end.y
+          }
+        });
         this.incrementLineCount();
 
         let toBeSliced = [];
-        let toBeCreated: Array<PolyK.Polygon> = [];
+        let toBeCreated: Array<{
+          points: PolyK.Polygon;
+          name: string;
+        }> = [];
 
         for (let i = 0; i < collisions.length; i++) {
           let vertices = collisions[i].parts[0].vertices;
@@ -240,7 +255,12 @@ export default class GameController {
           if (slicedPolys.length > 1) {
             toBeSliced.push(collisions[i]);
             slicedPolys.forEach(points => {
-              toBeCreated.push(points);
+              toBeCreated.push({
+                // @ts-ignore
+                points,
+                // @ts-ignore
+                name: collisions[i].name
+              });
             });
           }
 
@@ -257,7 +277,7 @@ export default class GameController {
           World.remove(this.world, body);
         });
 
-        toBeCreated.forEach(points => {
+        toBeCreated.forEach(({ points, name }) => {
           let poly = [];
           for (let i = 0; i < points.length / 2; i++) {
             poly.push({
@@ -271,7 +291,8 @@ export default class GameController {
           const body = Bodies.fromVertices(sliceCenter.x, sliceCenter.y, poly, {
             alive: false,
             label: LABEL.TETRONIMO,
-            render: {}
+            isPiece: true,
+            name
           });
 
           World.add(this.world, body);
@@ -409,5 +430,9 @@ export default class GameController {
 
   public getBodies() {
     return Composite.allBodies(this.world);
+  }
+
+  public getRowDeletionBounds() {
+    return this.rowDeletionBounds;
   }
 }
