@@ -11,7 +11,6 @@ import {
   Engine as MEngine,
   Events,
   Query,
-  Vector,
   Vertices,
   World,
   Bounds
@@ -106,10 +105,11 @@ export default class GameController {
   private engine: MEngine;
   private ground: Body;
   private hasInstantiated: boolean = false;
+  private level: number = 0;
   private lines: number = 0;
   private nextPiece: Body = null;
-  private world: World;
   private rowDeletionBounds: Array<Bounds> = [];
+  private world: World;
 
   constructor(engine: Engine) {
     this.world = engine.getWorld();
@@ -141,8 +141,9 @@ export default class GameController {
   private afterTick() {
     this.checkRows();
     document.querySelector('#lines .value').textContent = this.lines.toString();
+    document.querySelector('#level .value').textContent = this.level.toString();
     // Draw Score
-    // Draw Level
+
     // Should all of this be in the renderer?
   }
 
@@ -185,6 +186,10 @@ export default class GameController {
     block.parent.alive = false;
     block.parent.density = 1;
     block.parent.mass = 1;
+  }
+
+  private incrementLevelCount() {
+    this.level++;
   }
 
   private incrementLineCount() {
@@ -230,7 +235,12 @@ export default class GameController {
             y: end.y
           }
         });
+
         this.incrementLineCount();
+
+        if (this.lines !== 0 && this.lines % 10 == 0) {
+          this.incrementLevelCount();
+        }
 
         let toBeSliced = [];
         let toBeCreated: Array<{
