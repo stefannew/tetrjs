@@ -108,6 +108,7 @@ export default class GameController {
   private level: number = 0;
   private lines: number = 0;
   private nextPiece: Body = null;
+  private score: number = 0;
   private rowDeletionBounds: Array<Bounds> = [];
   private world: World;
 
@@ -124,6 +125,9 @@ export default class GameController {
     ) as HTMLDivElement).style.visibility = 'hidden';
     this.setCurrentState(GameState.PLAYING);
     this.world.gravity.y = GRAVITY;
+    this.lines = 0;
+    this.level = 0;
+    this.score = 0;
     Composite.allBodies(this.world).forEach(body => {
       World.remove(this.world, body);
     });
@@ -138,13 +142,22 @@ export default class GameController {
     Events.on(this.engine, 'afterTick', this.afterTick.bind(this));
   }
 
+  private setGravitySpeedModifier() {
+    if (this.level !== 0 && this.level % 10 === 0) {
+      this.world.gravity.y += GRAVITY;
+    }
+  }
+
   private afterTick() {
     this.checkRows();
+    this.setGravitySpeedModifier();
+
+    /**
+     * This should all probably be in the renderer, but I'm getting bored now
+     */
     document.querySelector('#lines .value').textContent = this.lines.toString();
     document.querySelector('#level .value').textContent = this.level.toString();
-    // Draw Score
-
-    // Should all of this be in the renderer?
+    document.querySelector('#score .value').textContent = this.score.toString();
   }
 
   private keyDown({ keyCode }: KeyboardEvent) {
@@ -158,15 +171,35 @@ export default class GameController {
         this.togglePaused();
         break;
       case KEY_CODE.DOWN:
+        if (
+          this.currentState === GameState.GAME_OVER ||
+          this.currentState === GameState.PAUSED
+        )
+          return;
         this.currentPiece.position.y += 2;
         break;
       case KEY_CODE.UP:
+        if (
+          this.currentState === GameState.GAME_OVER ||
+          this.currentState === GameState.PAUSED
+        )
+          return;
         Body.rotate(this.currentPiece, Math.PI / 2);
         break;
       case KEY_CODE.LEFT:
+        if (
+          this.currentState === GameState.GAME_OVER ||
+          this.currentState === GameState.PAUSED
+        )
+          return;
         this.currentPiece.position.x -= 2;
         break;
       case KEY_CODE.RIGHT:
+        if (
+          this.currentState === GameState.GAME_OVER ||
+          this.currentState === GameState.PAUSED
+        )
+          return;
         this.currentPiece.position.x += 2;
         break;
     }
@@ -177,7 +210,8 @@ export default class GameController {
     (document.querySelector(
       '#game-over-text'
     ) as HTMLDivElement).style.visibility = 'visible';
-    this.world.gravity.y = GRAVITY * 2;
+    this.world.gravity.y = GRAVITY * 8;
+    Events.off(this.engine, 'collisionStart', this.onCollisionStart.bind(this));
     World.remove(this.world, this.ground);
   }
 
@@ -279,7 +313,6 @@ export default class GameController {
             this.instantiateTetronimo();
             this.hasInstantiated = true;
           }
-
           World.remove(this.world, collisions[i].parent);
         }
 
