@@ -234,7 +234,10 @@ export default class GameController {
     const tetronimos = Composite.allBodies(this.world)
       // @ts-ignore
       .flatMap(body => body.parts)
-      .filter((body: Body) => body.label === LABEL.BLOCK);
+      .filter(
+        // @ts-ignore
+        (body: Body) => body.label === LABEL.BLOCK
+      );
 
     for (let y = 0; y < GAME_HEIGHT; y += BLOCK_SIZE) {
       const start = {
@@ -258,7 +261,7 @@ export default class GameController {
         }
       });
 
-      if (collisions.length >= 10) {
+      if (collisions.length >= 1000) {
         this.rowDeletionBounds.push({
           min: {
             x: start.x,
