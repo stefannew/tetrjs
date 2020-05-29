@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from './constants';
 // @ts-ignore
 import './style.css';
 import Engine from 'engine/engine';
-import Game from 'engine/Game';
+import Game from 'engine/game';
 import Renderer from 'engine/renderer';
 import GameController from 'engine/game-controller';
 
